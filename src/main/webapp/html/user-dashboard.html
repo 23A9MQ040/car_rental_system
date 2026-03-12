@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - AP Car Rentals</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">AP Car Rentals</div>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="browse-cars.html">Browse Cars</a></li>
+                <li><a href="user-dashboard.html" class="active">Dashboard</a></li>
+                <li>
+                    <button id="logoutBtn5" onclick="logout()" class="btn-logout">Logout</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- User Dashboard Section -->
+    <section class="dashboard-section">
+        <div class="container">
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('profile')">My Profile</button>
+                <button class="tab-button" onclick="switchTab('bookings')">My Bookings</button>
+                <button class="tab-button" onclick="switchTab('messages')">Messages <span id="unreadBadge" style="display:none; background: #ff6b35; color: white; border-radius: 50%; padding: 0.2rem 0.5rem; font-size: 0.8rem; margin-left: 0.5rem;">0</span></button>
+                <button class="tab-button" onclick="switchTab('myCars')">My Cars</button>
+            </div>
+
+            <!-- Profile Tab -->
+            <div id="profileTab" class="tab-content active">
+                <h2>User Profile</h2>
+                <div id="profileContainer" class="profile-form">
+                    <!-- Profile information will be loaded here -->
+                </div>
+                <div id="profileMessage" class="message"></div>
+            </div>
+
+            <!-- Bookings Tab -->
+            <div id="bookingsTab" class="tab-content">
+                <h2>My Bookings</h2>
+                <div id="bookingsContainer" class="bookings-list">
+                    <!-- Bookings will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Messages Tab -->
+            <div id="messagesTab" class="tab-content">
+                <h2>Messages</h2>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; height: 600px;">
+                    <!-- Conversations List -->
+                    <div style="background: white; border-radius: 8px; padding: 1rem; overflow-y: auto; border-right: 1px solid #eee;">
+                        <h3 style="margin-bottom: 1rem;">Conversations</h3>
+                        <div id="conversationsList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <!-- Conversations will load here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Messages Display -->
+                    <div style="background: white; border-radius: 8px; padding: 1rem; display: flex; flex-direction: column;">
+                        <div id="selectedConversation" style="flex: 1; overflow-y: auto; margin-bottom: 1rem; border: 1px solid #eee; border-radius: 4px; padding: 1rem;">
+                            <p style="text-align: center; color: #999;">Select a conversation to view messages</p>
+                        </div>
+                        
+                        <!-- Message Input -->
+                        <div id="messageInputArea" style="display: none;">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="messageInput" placeholder="Type your message..." style="flex: 1; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px;">
+                                <button onclick="sendMessage()" class="btn-primary" style="padding: 0.75rem 1.5rem;">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Cars Tab (Car Owner Section) -->
+            <div id="myCarsTab" class="tab-content">
+                <h2>My Car Fleet</h2>
+                <button onclick="toggleAddCarForm()" class="btn-primary" style="margin-bottom: 2rem;">+ Add New Car</button>
+                
+                <!-- Add Car Form -->
+                <form id="ownerAddCarForm" onsubmit="handleOwnerAddCar(event)" style="display:none; background: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+                    <h3>Add Your Car for Rent</h3>
+                    <div class="form-group">
+                        <label for="ownerCarMake">Car Make:</label>
+                        <input type="text" id="ownerCarMake" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarModel">Car Model:</label>
+                        <input type="text" id="ownerCarModel" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarYear">Year:</label>
+                        <input type="number" id="ownerCarYear" min="2000" max="2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarLicensePlate">License Plate:</label>
+                        <input type="text" id="ownerCarLicensePlate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarType">Car Type:</label>
+                        <select id="ownerCarType" required>
+                            <option value="sedan">Sedan</option>
+                            <option value="suv">SUV</option>
+                            <option value="coupe">Coupe</option>
+                            <option value="hatchback">Hatchback</option>
+                            <option value="pickup">Pickup</option>
+                            <option value="minivan">Minivan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarDaily Rate">Daily Rate ($):</label>
+                        <input type="number" id="ownerCarDailyRate" min="10" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarSeats">Seats:</label>
+                        <input type="number" id="ownerCarSeats" min="2" max="8" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarTransmission">Transmission:</label>
+                        <select id="ownerCarTransmission" required>
+                            <option value="automatic">Automatic</option>
+                            <option value="manual">Manual</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarFuelType">Fuel Type:</label>
+                        <select id="ownerCarFuelType" required>
+                            <option value="petrol">Petrol</option>
+                            <option value="diesel">Diesel</option>
+                            <option value="electric">Electric</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarDescription">Description:</label>
+                        <textarea id="ownerCarDescription" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCarImage">Car Image (URL or Upload):</label>
+                        <input type="text" id="ownerCarImage" placeholder="Paste image URL here">
+                        <small>Or drag & drop image below</small>
+                        <div id="imageDropZone" style="border: 2px dashed #ddd; padding: 2rem; text-align: center; margin-top: 1rem; cursor: pointer; border-radius: 4px;">
+                            <p>Drag & drop car image here</p>
+                            <input type="file" id="carImageFile" accept="image/*" style="display:none;">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">List My Car</button>
+                </form>
+
+                <!-- My Cars List -->
+                <div id="ownerCarsContainer" class="cars-grid">
+                    <!-- Owner's cars will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AP Car Rentals. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!getCurrentUser()) {
+                window.location.href = 'login.html';
+            }
+            loadUserProfile();
+            loadUserBookings();
+            loadMessages();
+            loadOwnerCars();
+        });
+    </script>
+</body>
+</html>

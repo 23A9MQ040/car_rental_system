@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AP Car Rentals</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">AP Car Rentals</div>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="admin-dashboard.html" class="active">Admin Dashboard</a></li>
+                <li>
+                    <button id="logoutBtn6" onclick="logout()" class="btn-logout">Logout</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Admin Dashboard Section -->
+    <section class="admin-section">
+        <div class="container">
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchAdminTab('cars')">Manage Cars</button>
+                <button class="tab-button" onclick="switchAdminTab('users')">Manage Users</button>
+                <button class="tab-button" onclick="switchAdminTab('bookings')">View Bookings</button>
+                <button class="tab-button" onclick="switchAdminTab('promos')">Manage Promos</button>
+            </div>
+
+            <!-- Cars Management Tab -->
+            <div id="carsTab" class="tab-content active">
+                <h2>Manage Cars</h2>
+                <button onclick="showAddCarForm()" class="btn-primary">Add New Car</button>
+                <div id="addCarForm" style="display: none;" class="form-container">
+                    <form onsubmit="handleAddCar(event)">
+                        <input type="text" placeholder="Make" required id="carMake">
+                        <input type="text" placeholder="Model" required id="carModel">
+                        <input type="number" placeholder="Year" required id="carYear">
+                        <input type="text" placeholder="License Plate" required id="carLicensePlate">
+                        <input type="text" placeholder="Car Type (sedan, suv, etc)" required id="carType">
+                        <input type="number" placeholder="Daily Rate" required id="carRate">
+                        <input type="number" placeholder="Seats" required id="carSeats">
+                        <input type="text" placeholder="Transmission" required id="carTransmission">
+                        <input type="text" placeholder="Fuel Type" required id="carFuelType">
+                        <input type="text" placeholder="Image URL" id="carImage">
+                        <textarea placeholder="Description" id="carDescription"></textarea>
+                        <button type="submit" class="btn-primary">Add Car</button>
+                        <button type="button" onclick="showAddCarForm()" class="btn-secondary">Cancel</button>
+                    </form>
+                </div>
+                <div id="carsListContainer" class="admin-table">
+                    <!-- Cars list will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Users Management Tab -->
+            <div id="usersTab" class="tab-content">
+                <h2>Manage Users</h2>
+                <div id="usersListContainer" class="admin-table">
+                    <!-- Users list will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Bookings Management Tab -->
+            <div id="bookingsTab" class="tab-content">
+                <h2>View All Bookings</h2>
+                <div id="allBookingsContainer" class="admin-table">
+                    <!-- Bookings list will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Promos Management Tab -->
+            <div id="promosTab" class="tab-content">
+                <h2>Manage Promo Codes</h2>
+                <button onclick="showAddPromoForm()" class="btn-primary">Add New Promo Code</button>
+                <div id="addPromoForm" style="display: none;" class="form-container">
+                    <form onsubmit="handleAddPromo(event)">
+                        <input type="text" placeholder="Promo Code" required id="promoCode">
+                        <input type="number" placeholder="Discount %" id="promoDiscountPct">
+                        <input type="number" placeholder="Discount Amount" id="promoDiscountAmt">
+                        <input type="number" placeholder="Max Uses" required id="promoMaxUses">
+                        <input type="date" placeholder="Expiry Date" id="promoExpiryDate">
+                        <textarea placeholder="Description" id="promoDescription"></textarea>
+                        <button type="submit" class="btn-primary">Add Promo</button>
+                        <button type="button" onclick="showAddPromoForm()" class="btn-secondary">Cancel</button>
+                    </form>
+                </div>
+                <div id="promosListContainer" class="admin-table">
+                    <!-- Promos list will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AP Car Rentals. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = getCurrentUser();
+            if (!user || !user.isAdmin) {
+                window.location.href = 'login.html';
+            }
+            loadAdminData();
+        });
+    </script>
+</body>
+</html>

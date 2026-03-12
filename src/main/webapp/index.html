@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Car Rentals - Premium Car Rental Service</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">AP Car Rentals</div>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="html/browse-cars.html">Browse Cars</a></li>
+                <li id="userMenu" style="display: none;">
+                    <a href="html/user-dashboard.html">Dashboard</a>
+                </li>
+                <li id="adminMenu" style="display: none;">
+                    <a href="html/admin-dashboard.html">Admin</a>
+                </li>
+                <li>
+                    <button id="authBtn" onclick="handleAuthClick()" class="btn-auth">Login</button>
+                </li>
+                <li>
+                    <button id="logoutBtn" onclick="logout()" class="btn-logout" style="display: none;">Logout</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to AP Car Rentals</h1>
+            <p>Find your perfect car for every journey</p>
+            <a href="html/browse-cars.html" class="btn-primary">Browse Cars</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="feature-card">
+                <h3>Wide Selection</h3>
+                <p>Choose from our vast fleet of vehicles</p>
+            </div>
+            <div class="feature-card">
+                <h3>Affordable Rates</h3>
+                <p>Competitive pricing with exclusive promo codes</p>
+            </div>
+            <div class="feature-card">
+                <h3>24/7 Support</h3>
+                <p>Customer support available round the clock</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Cars Section -->
+    <section class="popular-cars">
+        <div class="container">
+            <h2>Popular Cars</h2>
+            <div id="popularCarsContainer" class="cars-grid">
+                <!-- Cars will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AP Car Rentals. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

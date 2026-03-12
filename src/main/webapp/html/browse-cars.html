@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Cars - AP Car Rentals</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">AP Car Rentals</div>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="browse-cars.html" class="active">Browse Cars</a></li>
+                <li id="userMenu2" style="display: none;">
+                    <a href="user-dashboard.html">Dashboard</a>
+                </li>
+                <li id="adminMenu2" style="display: none;">
+                    <a href="admin-dashboard.html">Admin</a>
+                </li>
+                <li>
+                    <button id="authBtn2" onclick="handleAuthClick()" class="btn-auth">Login</button>
+                </li>
+                <li>
+                    <button id="logoutBtn2" onclick="logout()" class="btn-logout" style="display: none;">Logout</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Filters Section -->
+    <section class="filters-section">
+        <div class="container">
+            <h2>Find Your Perfect Car</h2>
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="carTypeFilter">Car Type:</label>
+                    <select id="carTypeFilter" onchange="filterCars()">
+                        <option value="">All Types</option>
+                        <option value="sedan">Sedan</option>
+                        <option value="suv">SUV</option>
+                        <option value="coupe">Coupe</option>
+                        <option value="hatchback">Hatchback</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="maxPrice">Max Daily Rate:</label>
+                    <input type="number" id="maxPrice" placeholder="Enter max price" onchange="filterCars()">
+                </div>
+
+                <button onclick="resetFilters()" class="btn-secondary">Reset Filters</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cars Grid Section -->
+    <section class="cars-section">
+        <div class="container">
+            <div id="carsGrid" class="cars-grid">
+                <!-- Cars will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AP Car Rentals. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // Load cars on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthButtons();
+            loadCars();
+        });
+    </script>
+</body>
+</html>

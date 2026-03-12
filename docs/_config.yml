@@ -1,0 +1,23 @@
+title: AP Car Rentals
+description: Premium Car Rental Management System with 1000+ vehicles, real-time messaging, and car owner portal
+url: https://23A9MQ040.github.io
+baseurl: /car-rental-ap
+theme: minimal
+plugins:
+  - jekyll-seo-tag
+  - jekyll-feed
+
+# Site settings
+author:
+  name: Car Rental System
+  email: contact@carrental.com
+
+# GitHub Pages
+github_username: 23A9MQ040
+repository: https://github.com/23A9MQ040/car_rental_system
+
+# Social media
+social_media_username: car_rentals
+
+# Shows an edit button on every page
+edit_url: https://github.com/23A9MQ040/car_rental_system/blob/main

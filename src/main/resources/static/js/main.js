@@ -1,5 +1,5 @@
 // ===== API Configuration =====
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8081/api';
 
 // ===== CURRENCY CONFIGURATION =====
 const EXCHANGE_RATES = {
@@ -91,7 +91,7 @@ const fallbackData = {
             transmission: "automatic",
             fuelType: "petrol",
             isAvailable: true,
-             imageUrl: "https://images.unsplash.com/photo-1590362891991-f776e933a690?w=400&h=300&fit=crop",
+            imageUrl: "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?w=400&h=300&fit=crop",
             description: "Spacious SUV for family trips",
             createdAt: "2026-01-02 10:00:00",
             updatedAt: "2026-01-02 10:00:00"
@@ -108,7 +108,7 @@ const fallbackData = {
             transmission: "automatic",
             fuelType: "petrol",
             isAvailable: true,
-            imageUrl: "https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=400&h=300&fit=crop",
+            imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&h=300&fit=crop",
             description: "Luxury sedan with premium features",
             createdAt: "2026-01-03 10:00:00",
             updatedAt: "2026-01-03 10:00:00"
@@ -125,7 +125,7 @@ const fallbackData = {
             transmission: "manual",
             fuelType: "petrol",
             isAvailable: true,
-            imageUrl: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop",
+            imageUrl: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400&h=300&fit=crop",
             description: "Sporty coupe for thrilling drives",
             createdAt: "2026-01-04 10:00:00",
             updatedAt: "2026-01-04 10:00:00"
@@ -142,7 +142,7 @@ const fallbackData = {
             transmission: "automatic",
             fuelType: "petrol",
             isAvailable: true,
-            imageUrl: "https://images.unsplash.com/photo-1552832850-751d69d30e8d?w=400&h=300&fit=crop",
+            imageUrl: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=400&h=300&fit=crop",
             description: "Compact and fuel-efficient hatchback",
             createdAt: "2026-01-05 10:00:00",
             updatedAt: "2026-01-05 10:00:00"
@@ -208,15 +208,15 @@ function generateAdditionalCars() {
     const transmissions = ["automatic", "manual"];
     const fuelTypes = ["petrol", "diesel", "electric", "hybrid"];
     const carImages = [
-        "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1590362891991-f776e933a690?w=400&h=300&fit=crop", // Toyota sedan
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop", // Porche sport
-        "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=300&fit=crop", // Ford muscle
-        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop", // Lambo luxury
-        "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400&h=300&fit=crop", // Ferrari sport
-        "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=300&fit=crop", // Mercedes luxury
-        "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=400&h=300&fit=crop", // VW compact
-        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop"  // Chevy muscle
+        "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400&h=300&fit=crop", // Toyota
+        "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?w=400&h=300&fit=crop", // Honda
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop", // Porsche
+        "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=300&fit=crop", // Ford
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop", // Lamborghini
+        "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400&h=300&fit=crop", // Ferrari
+        "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=300&fit=crop", // Mercedes
+        "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=400&h=300&fit=crop", // VW
+        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop"  // Chevy
     ];
 
     let carId = 6;
@@ -420,7 +420,7 @@ function handleAuthClick() {
 // ===== CAR FUNCTIONS =====
 async function loadCars() {
     loadAllData();
-    const carsGrid = document.getElementById('carsGrid');
+    const carsGrid = document.getElementById('carsGrid') || document.getElementById('popularCarsContainer');
     if (!carsGrid) return;
 
     carsGrid.innerHTML = '';
@@ -463,10 +463,7 @@ function displayCars(cars) {
             <div class="price-tag">
                 <div class="main-price">$${car.dailyRate || 0}<small>/day</small></div>
                 <div class="alt-prices" style="font-size: 0.8rem; opacity: 0.8; margin-top: 5px;">
-                    ${formatAllCurrencies(car.dailyRate).replace('$', '').split(' • ').slice(1).map((p, i) => {
-                        const symbol = i === 0 ? '€' : '₹';
-                        return `<span>${symbol}${p}</span>`;
-                    }).join(' | ')}
+                    ${formatAllCurrencies(car.dailyRate).split(' • ').slice(1).map(p => `<span>${p}</span>`).join(' | ')}
                 </div>
             </div>
             <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
@@ -1428,6 +1425,12 @@ function deleteOwnerCar(carId) {
 
 // Initialize everything on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Clear storage to fix branding issues if old data exists
+    if (!localStorage.getItem('branding_fix_v2')) {
+        localStorage.removeItem(STORAGE_KEY_CARS);
+        localStorage.setItem('branding_fix_v2', 'true');
+    }
+    
     loadAllData();
     updateAuthButtons();
     updateUnreadBadge();

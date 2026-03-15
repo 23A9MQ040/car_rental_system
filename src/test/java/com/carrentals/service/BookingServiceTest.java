@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("null")
 class BookingServiceTest {
 
     @Mock
@@ -55,7 +56,7 @@ class BookingServiceTest {
         booking.setDropoffLocation("Airport");
 
         promoCode = new PromoCode();
-        promoCode.setPromoCodeId(1L);
+        promoCode.setPromoId(1L);
         promoCode.setCode("SAVE20");
         promoCode.setDiscountPercentage(20.0);
     }
@@ -199,6 +200,7 @@ class BookingServiceTest {
 
         // Act
         when(carRepository.findById(1L)).thenReturn(Optional.of(car));
+        when(bookingRepository.save(booking)).thenReturn(booking);
         Booking result = bookingService.createBooking(booking);
 
         // Assert

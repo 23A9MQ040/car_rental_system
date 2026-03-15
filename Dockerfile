@@ -1,35 +1,18 @@
 # Stage 1: Build stage
-FROM maven:3.9.11-openjdk-17-slim as builder
-
-WORKDIR /build
-
-# Copy pom.xml
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
 COPY pom.xml .
-
-# Copy source code
 COPY src ./src
-
-# Build the application
 RUN mvn clean package -DskipTests
 
-# Stage 2: Runtime stage
-FROM openjdk:17-jdk-slim
-
+# Stage 2: Run stage
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-
-# Copy the built WAR file from builder stage
-COPY --from=builder /build/target/car-rental-system-*.war app.war
-
-# Create a non-root user for security
-RUN useradd -m -u 1000 carapp && chown -R carapp:carapp /app
-USER carapp
-
-# Expose the application port
+COPY --from=build /app/target/car-rental-system-1.0.0.jar app.jar
 EXPOSE 8080
 
-# Health check
+# Health check to ensure the service is running
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8080/api/cars || exit 1
 
-# Run the application
-ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "app.war"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

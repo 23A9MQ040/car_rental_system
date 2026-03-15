@@ -26,6 +26,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // Alias for testing
+    public User createUser(User user) {
+        return registerUser(user);
+    }
+
     public User loginUser(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent() && user.get().getPassword().equals(password)) {
@@ -40,6 +45,11 @@ public class UserService {
 
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    // Alias for testing (maps to email in this system)
+    public Optional<User> getUserByUsername(String username) {
+        return getUserByEmail(username);
     }
 
     public User updateUser(Long userId, User userDetails) {
@@ -58,5 +68,14 @@ public class UserService {
 
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+    // Helper methods for calculations and testing alignment
+    public boolean isValidEmail(String email) {
+        return email != null && email.contains("@") && email.contains(".");
+    }
+
+    public boolean userExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 }

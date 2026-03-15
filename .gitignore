@@ -1,34 +1,10 @@
-# Maven
 target/
+*.log
+*.class
 *.jar
 *.war
-*.ear
-
-# IDE
+*.iml
 .idea/
 .vscode/
-*.swp
-*.swo
-*~
-.DS_Store
-*.iml
-
-# Environment
-.env
-.env.local
-
-# Build
 node_modules/
-dist/
-build/
-
-# Logs
-*.log
-logs/
-
-# Dependencies
-.m2/
-dependency-reduced-pom.xml
-
-# OS
-Thumbs.db
+.DS_Store

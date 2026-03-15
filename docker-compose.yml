@@ -1,82 +1,29 @@
-version: '3.8'
-
 services:
-  mysql:
-    image: mysql:8.0.35
-    container_name: car-rental-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-cardb}
-      MYSQL_USER: ${MYSQL_USER:-carapp}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-carapppassword}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - car-rental-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: car-rental-app
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-cardb}
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-carapp}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-carapppassword}
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
-      SPRING_JPA_SHOW_SQL: "false"
-      LOGGING_LEVEL_COM_CARRENTALS: DEBUG
-      LOGGING_LEVEL_ROOT: INFO
-      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production-min-32-chars}
-      JWT_EXPIRATION: 86400000
+    build: .
     ports:
       - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_USER=caruser
+      - DB_PASSWORD=carpassword
+      - DB_NAME=cardb
+      - SPRING_PROFILES_ACTIVE=prod
     depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - car-rental-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/cars"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      - db
 
-  adminer:
-    image: adminer:latest
-    container_name: car-rental-adminer
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_DATABASE=cardb
+      - MYSQL_USER=caruser
+      - MYSQL_PASSWORD=carpassword
+      - MYSQL_ROOT_PASSWORD=rootpassword
     ports:
-      - "9090:8080"
-    depends_on:
-      - mysql
-    networks:
-      - car-rental-network
-
-networks:
-  car-rental-network:
-    driver: bridge
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
 
 volumes:
-  mysql_data:
-    driver: local
-
-# Usage:
-# docker-compose up -d              # Start all services
-# docker-compose down               # Stop all services
-# docker-compose logs -f app        # View application logs
-# docker-compose ps                 # Check running services
-# 
-# Access points:
-# Application:  http://localhost:8080
-# Adminer DB:   http://localhost:9090
+  db_data:

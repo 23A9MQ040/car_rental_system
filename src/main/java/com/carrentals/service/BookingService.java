@@ -55,7 +55,10 @@ public class BookingService {
             Optional<PromoCode> promoOpt = promoCodeRepository.findByCode(booking.getPromoCode());
             if (promoOpt.isPresent()) {
                 PromoCode promo = promoOpt.get();
-                if (promo.getIsActive() && promo.getCurrentUses() < promo.getMaxUses()) {
+                boolean isActive = Boolean.TRUE.equals(promo.getIsActive());
+                int current = promo.getCurrentUses() != null ? promo.getCurrentUses() : 0;
+                int max = promo.getMaxUses() != null ? promo.getMaxUses() : Integer.MAX_VALUE;
+                if (isActive && current < max) {
                     double discount = 0;
                     if (promo.getDiscountPercentage() != null) {
                         discount = (basePrice * promo.getDiscountPercentage()) / 100;
@@ -118,5 +121,36 @@ public class BookingService {
 
     public List<Booking> getBookingsByStatus(String status) {
         return bookingRepository.findByStatus(status);
+    }
+
+    // Helper methods for calculations and testing alignment
+    public void applyPromoCode(Booking booking, String code) {
+        Optional<PromoCode> promoOpt = promoCodeRepository.findByCode(code);
+        if (promoOpt.isPresent()) {
+            PromoCode promo = promoOpt.get();
+            boolean isActive = Boolean.TRUE.equals(promo.getIsActive());
+            int current = promo.getCurrentUses() != null ? promo.getCurrentUses() : 0;
+            int max = promo.getMaxUses() != null ? promo.getMaxUses() : Integer.MAX_VALUE;
+            if (isActive && current < max) {
+                double basePrice = booking.getTotalPrice() != null ? booking.getTotalPrice() : 0.0;
+                double discount = 0;
+                if (promo.getDiscountPercentage() != null) {
+                    discount = (basePrice * promo.getDiscountPercentage()) / 100;
+                } else if (promo.getDiscountAmount() != null) {
+                    discount = promo.getDiscountAmount();
+                }
+                booking.setDiscountAmount(discount);
+                booking.setPromoCode(code);
+            } else {
+                throw new IllegalArgumentException("Promo code is invalid or expired");
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid promo code");
+        }
+    }
+
+    public double calculateTotalPrice(Integer numberOfDays, Double dailyRate) {
+        if (numberOfDays == null || dailyRate == null) return 0.0;
+        return numberOfDays * dailyRate;
     }
 }

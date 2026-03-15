@@ -1,6 +1,29 @@
 // ===== API Configuration =====
 const API_BASE_URL = 'http://localhost:8080/api';
 
+// ===== CURRENCY CONFIGURATION =====
+const EXCHANGE_RATES = {
+    USD: 1,
+    EUR: 0.92,
+    INR: 83.15
+};
+
+const CURRENCY_SYMBOLS = {
+    USD: '$',
+    EUR: '€',
+    INR: '₹'
+};
+
+function formatAllCurrencies(usdAmount) {
+    if (!usdAmount) return '';
+    const results = [];
+    for (const [currency, rate] of Object.entries(EXCHANGE_RATES)) {
+        const converted = (usdAmount * rate).toFixed(2);
+        results.push(`${CURRENCY_SYMBOLS[currency]}${converted}`);
+    }
+    return results.join(' • ');
+}
+
 // ===== FALLBACK DATA (In-memory database when backend is unavailable) =====
 const fallbackData = {
     users: [
@@ -25,6 +48,17 @@ const fallbackData = {
             isAdmin: false,
             createdAt: "2026-03-02 10:00:00",
             updatedAt: "2026-03-02 10:00:00"
+        },
+        {
+            userId: 3,
+            fullName: "John Doe",
+            email: "johndoe@example.com",
+            password: "password123",
+            phoneNumber: "555-0003",
+            licenseNumber: "DL999999",
+            isAdmin: false,
+            createdAt: "2026-03-15 10:00:00",
+            updatedAt: "2026-03-15 10:00:00"
         }
     ],
     cars: [
@@ -57,7 +91,7 @@ const fallbackData = {
             transmission: "automatic",
             fuelType: "petrol",
             isAvailable: true,
-            imageUrl: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop",
+             imageUrl: "https://images.unsplash.com/photo-1590362891991-f776e933a690?w=400&h=300&fit=crop",
             description: "Spacious SUV for family trips",
             createdAt: "2026-01-02 10:00:00",
             updatedAt: "2026-01-02 10:00:00"
@@ -175,13 +209,14 @@ function generateAdditionalCars() {
     const fuelTypes = ["petrol", "diesel", "electric", "hybrid"];
     const carImages = [
         "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1552832850-751d69d30e8d?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1605713860574-144fbad038f1?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1581092161562-40038f56c17b?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1617654112368-307921291f42?w=400&h=300&fit=crop"
+        "https://images.unsplash.com/photo-1590362891991-f776e933a690?w=400&h=300&fit=crop", // Toyota sedan
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop", // Porche sport
+        "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=300&fit=crop", // Ford muscle
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop", // Lambo luxury
+        "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400&h=300&fit=crop", // Ferrari sport
+        "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=300&fit=crop", // Mercedes luxury
+        "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=400&h=300&fit=crop", // VW compact
+        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop"  // Chevy muscle
     ];
 
     let carId = 6;
@@ -247,9 +282,51 @@ function getCurrentUser() {
     return user ? JSON.parse(user) : null;
 }
 
+// ===== NAVIGATION HELPER =====
+function smartRedirect(targetPage) {
+    const isSubPage = window.location.pathname.includes('/html/');
+    let finalPath = '';
+
+    if (targetPage === 'index.html') {
+        finalPath = isSubPage ? '../index.html' : 'index.html';
+    } else {
+        // targetPage is a sub-page (e.g., login.html, browse-cars.html)
+        finalPath = isSubPage ? targetPage : `html/${targetPage}`;
+    }
+    
+    console.log(`Redirecting to: ${finalPath}`);
+    window.location.href = finalPath;
+}
+
 function logout() {
     localStorage.removeItem(STORAGE_KEY_USER);
-    window.location.href = '../index.html';
+    window.location.reload(); // Refresh to update UI
+}
+
+function updateAuthButtons() {
+    const currentUser = getCurrentUser();
+    const navLinks = document.querySelector('.nav-links');
+    if (!navLinks) return;
+
+    const isSubPage = window.location.pathname.includes('/html/');
+    const prefix = isSubPage ? '' : 'html/';
+    const indexPrefix = isSubPage ? '../' : '';
+
+    if (currentUser) {
+        navLinks.innerHTML = `
+            <li><a href="${indexPrefix}index.html">Home</a></li>
+            <li><a href="${prefix}browse-cars.html">Browse Cars</a></li>
+            <li><a href="${prefix}${currentUser.isAdmin ? 'admin-dashboard.html' : 'user-dashboard.html'}">Dashboard</a></li>
+            <li><a href="#" onclick="logout()" class="btn-auth">Logout</a></li>
+        `;
+    } else {
+        navLinks.innerHTML = `
+            <li><a href="${indexPrefix}index.html">Home</a></li>
+            <li><a href="${prefix}browse-cars.html">Browse Cars</a></li>
+            <li><a href="${prefix}login.html" class="btn-auth">Login</a></li>
+            <li><a href="${prefix}register.html" class="btn-primary">Sign Up</a></li>
+        `;
+    }
 }
 
 // ===== AUTHENTICATION FUNCTIONS =====
@@ -270,7 +347,7 @@ async function handleLogin(event) {
             if (data.success) {
                 saveUser(data);
                 alert('Login successful!');
-                window.location.href = '../index.html';
+                smartRedirect('index.html');
             }
         } else {
             // Try fallback data
@@ -278,7 +355,7 @@ async function handleLogin(event) {
             if (user) {
                 saveUser(user);
                 alert('Login successful!');
-                window.location.href = '../index.html';
+                smartRedirect('index.html');
             } else {
                 showMessage('loginMessage', 'Invalid email or password', 'error');
             }
@@ -289,7 +366,7 @@ async function handleLogin(event) {
         if (user) {
             saveUser(user);
             alert('Login successful!');
-            window.location.href = '../index.html';
+            smartRedirect('index.html');
         } else {
             showMessage('loginMessage', 'Invalid email or password', 'error');
         }
@@ -319,7 +396,7 @@ async function handleRegister(event) {
             const data = await response.json();
             if (data.success) {
                 alert('Registration successful! Please login.');
-                window.location.href = 'login.html';
+                smartRedirect('login.html');
             }
         } else {
             showMessage('registerMessage', 'Registration failed', 'error');
@@ -332,12 +409,12 @@ async function handleRegister(event) {
         newUser.updatedAt = newUser.createdAt;
         fallbackData.users.push(newUser);
         alert('Registration successful! Please login.');
-        window.location.href = 'login.html';
+        smartRedirect('login.html');
     }
 }
 
 function handleAuthClick() {
-    window.location.href = 'html/login.html';
+    smartRedirect('login.html');
 }
 
 // ===== CAR FUNCTIONS =====
@@ -364,7 +441,7 @@ async function loadCars() {
 }
 
 function displayCars(cars) {
-    const carsGrid = document.getElementById('carsGrid');
+    const carsGrid = document.getElementById('carsGrid') || document.getElementById('popularCarsContainer');
     if (!carsGrid) return;
 
     carsGrid.innerHTML = '';
@@ -373,30 +450,28 @@ function displayCars(cars) {
         const carCard = document.createElement('div');
         carCard.className = 'car-card';
         
-        // Get owner information if available
-        let ownerInfo = '';
-        if (car.ownerId) {
-            const owner = fallbackData.users.find(u => u.userId === car.ownerId);
-            if (owner) {
-                ownerInfo = `<p style="font-size: 0.85rem; color: #ff6b35; margin-top: 0.5rem;"><strong>Owner:</strong> ${owner.fullName}</p>`;
-            }
-        }
-        
         carCard.innerHTML = `
             <img src="${car.imageUrl || 'https://via.placeholder.com/300x200?text=' + car.make + '+' + car.model}" alt="${car.make} ${car.model}" class="car-image" onerror="this.src='https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400&h=300&fit=crop'">
             <h3>${car.make} ${car.model}</h3>
-            <p class="car-type">${car.carType} • ${car.year}</p>
-            ${ownerInfo}
+            <p class="car-type">${car.carType.toUpperCase()} • ${car.year}</p>
             <p class="car-description">${car.description || 'Quality vehicle for rent'}</p>
             <div class="car-specs">
                 <span>💺 ${car.seats} Seats</span>
                 <span>⚙️ ${car.transmission}</span>
                 <span>⛽ ${car.fuelType}</span>
             </div>
-            <div class="car-price">$${car.dailyRate || 0}/day</div>
-            <div style="display: flex; gap: 0.5rem;">
-                <button onclick="viewCarDetails(${car.carId})" class="btn-primary" style="flex: 1;">View Details</button>
-                ${car.ownerId ? `<button onclick="initiateMessage(${car.ownerId})" class="btn-secondary" style="flex: 1;">Message</button>` : ''}
+            <div class="price-tag">
+                <div class="main-price">$${car.dailyRate || 0}<small>/day</small></div>
+                <div class="alt-prices" style="font-size: 0.8rem; opacity: 0.8; margin-top: 5px;">
+                    ${formatAllCurrencies(car.dailyRate).replace('$', '').split(' • ').slice(1).map((p, i) => {
+                        const symbol = i === 0 ? '€' : '₹';
+                        return `<span>${symbol}${p}</span>`;
+                    }).join(' | ')}
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                <button onclick="viewCarDetails(${car.carId})" class="btn-primary" style="flex: 1.5;">View Details</button>
+                <button onclick="goToBooking(${car.carId})" class="btn-auth" style="flex: 1;">Book</button>
             </div>
         `;
         carsGrid.appendChild(carCard);
@@ -405,7 +480,7 @@ function displayCars(cars) {
 
 function viewCarDetails(carId) {
     localStorage.setItem('selectedCarId', carId);
-    window.location.href = 'html/car-details.html';
+    smartRedirect('car-details.html');
 }
 
 function filterCars() {
@@ -477,25 +552,33 @@ function displayCarDetails(car) {
                 <img src="${car.imageUrl || 'https://via.placeholder.com/500x400?text=' + car.make + '+' + car.model}" alt="${car.make} ${car.model}" onerror="this.src='https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400&h=300&fit=crop'">
             </div>
             <div class="car-detail-info">
-                <h2>${car.make} ${car.model} (${car.year})</h2>
-                <p class="license-plate">License: ${car.licensePlate}</p>
-                <p class="description">${car.description || 'Premium quality vehicle'}</p>
+                <h2>${car.make} ${car.model} <small>(${car.year})</small></h2>
+                <div class="price-tag">
+                    <div class="main-price" style="font-size: 2rem;">$${car.dailyRate}<small>/day</small></div>
+                    <div class="alt-prices" style="font-size: 1rem; opacity: 0.8; margin-top: 10px;">
+                        ${formatAllCurrencies(car.dailyRate).replace('$', '').split(' • ').slice(1).map((p, i) => {
+                            const symbol = i === 0 ? '€' : '₹';
+                            return `<span>${symbol}${p}</span>`;
+                        }).join(' | ')}
+                    </div>
+                </div>
+                <p class="license-plate" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">License: ${car.licensePlate}</p>
+                <p class="description" style="margin-bottom: 2rem; font-size: 1.1rem;">${car.description || 'Premium quality vehicle maintained to the highest standards'}</p>
                 
-                <h3>Specifications</h3>
-                <ul class="specs-list">
-                    <li>Type: ${car.carType}</li>
-                    <li>Seats: ${car.seats}</li>
-                    <li>Transmission: ${car.transmission}</li>
-                    <li>Fuel Type: ${car.fuelType}</li>
-                    <li>Daily Rate: $${car.dailyRate}</li>
-                    <li>Status: ${car.isAvailable ? 'Available' : 'Not Available'}</li>
+                <h3 style="margin-bottom: 1rem;">Specifications</h3>
+                <ul class="specs-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; list-style: none; margin-bottom: 2rem;">
+                    <li><strong>Type:</strong> ${car.carType.toUpperCase()}</li>
+                    <li><strong>Seats:</strong> ${car.seats}</li>
+                    <li><strong>Transmission:</strong> ${car.transmission}</li>
+                    <li><strong>Fuel:</strong> ${car.fuelType}</li>
+                    <li><strong>Status:</strong> <span style="color: ${car.isAvailable ? 'var(--primary)' : 'red'}">${car.isAvailable ? 'Available' : 'Not Available'}</span></li>
                 </ul>
 
                 ${ownerDetails}
 
                 <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    ${car.isAvailable ? `<button onclick="goToBooking(${car.carId})" class="btn-primary">Book Now</button>` : '<button disabled class="btn-disabled">Not Available</button>'}
-                    ${car.ownerId ? `<button onclick="initiateMessage(${car.ownerId})" class="btn-secondary">Message Owner</button>` : ''}
+                    ${car.isAvailable ? `<button onclick="goToBooking(${car.carId})" class="btn-primary" style="flex: 2;">Book This Vehicle</button>` : '<button disabled class="btn-disabled" style="flex: 2;">Currently Unavailable</button>'}
+                    ${car.ownerId ? `<button onclick="initiateMessage(${car.ownerId})" class="btn-auth" style="flex: 1;">Contact Owner</button>` : ''}
                 </div>
             </div>
         </div>
@@ -505,7 +588,7 @@ function displayCarDetails(car) {
 function goToBooking(carId) {
     if (!getCurrentUser()) {
         alert('Please login to book a car');
-        window.location.href = 'login.html';
+        smartRedirect('login.html');
         return;
     }
     localStorage.setItem('selectedCarId', carId);
@@ -1343,11 +1426,24 @@ function deleteOwnerCar(carId) {
     }
 }
 
-// Initialize car owner data
+// Initialize everything on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadAllData();
     updateAuthButtons();
     updateUnreadBadge();
+    
+    // Page-specific initialization
+    const path = window.location.pathname;
+    const carsGrid = document.getElementById('carsGrid') || document.getElementById('popularCarsContainer');
+    const detailsContainer = document.getElementById('carDetailsContainer');
+    
+    if (carsGrid) {
+        loadCars();
+    }
+    
+    if (detailsContainer) {
+        loadCarDetails();
+    }
     
     // Setup image drop zone
     const imageDropZone = document.getElementById('imageDropZone');

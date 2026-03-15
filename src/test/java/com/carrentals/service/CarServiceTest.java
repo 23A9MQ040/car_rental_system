@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("null")
 class CarServiceTest {
 
     @Mock
@@ -104,6 +105,7 @@ class CarServiceTest {
     void testUpdateCar() {
         // Arrange
         availableCar.setModel("Toyota Camry 2024");
+        when(carRepository.findById(availableCar.getCarId())).thenReturn(Optional.of(availableCar));
         when(carRepository.save(availableCar)).thenReturn(availableCar);
 
         // Act

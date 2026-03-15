@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("null")
 class UserServiceTest {
 
     @Mock
@@ -31,7 +32,6 @@ class UserServiceTest {
     void setUp() {
         user = new User();
         user.setUserId(1L);
-        user.setUsername("john_doe");
         user.setEmail("john@example.com");
         user.setPassword("password123");
         user.setFullName("John Doe");
@@ -47,7 +47,6 @@ class UserServiceTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals("john_doe", result.getUsername());
         assertEquals("john@example.com", result.getEmail());
         verify(userRepository, times(1)).save(user);
     }
@@ -62,7 +61,7 @@ class UserServiceTest {
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals("john_doe", result.get().getUsername());
+        assertEquals("john@example.com", result.get().getEmail());
     }
 
     @Test
@@ -80,10 +79,10 @@ class UserServiceTest {
     @Test
     void testGetUserByUsername() {
         // Arrange
-        when(userRepository.findByUsername("john_doe")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
 
         // Act
-        Optional<User> result = userService.getUserByUsername("john_doe");
+        Optional<User> result = userService.getUserByUsername("john@example.com");
 
         // Assert
         assertTrue(result.isPresent());
@@ -100,21 +99,22 @@ class UserServiceTest {
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals("john_doe", result.get().getUsername());
+        assertEquals("John Doe", result.get().getFullName());
     }
 
     @Test
     void testUpdateUser() {
         // Arrange
         user.setFullName("John Smith");
-        when(userRepository.save(user)).thenReturn(user);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
         // Act
-        User result = userService.updateUser(user);
+        User result = userService.updateUser(1L, user);
 
         // Assert
         assertEquals("John Smith", result.getFullName());
-        verify(userRepository, times(1)).save(user);
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
@@ -134,7 +134,7 @@ class UserServiceTest {
         // Arrange
         User user2 = new User();
         user2.setUserId(2L);
-        user2.setUsername("jane_doe");
+        user2.setEmail("jane@example.com");
         List<User> users = Arrays.asList(user, user2);
         when(userRepository.findAll()).thenReturn(users);
 
@@ -160,11 +160,11 @@ class UserServiceTest {
     @Test
     void testUserExists() {
         // Arrange
-        when(userRepository.existsByUsername("john_doe")).thenReturn(true);
-        when(userRepository.existsByUsername("nonexistent")).thenReturn(false);
+        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("nonexistent")).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertTrue(userService.userExists("john_doe"));
+        assertTrue(userService.userExists("john@example.com"));
         assertFalse(userService.userExists("nonexistent"));
     }
 }

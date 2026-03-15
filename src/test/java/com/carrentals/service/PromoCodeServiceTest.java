@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("null")
 class PromoCodeServiceTest {
 
     @Mock
@@ -30,11 +31,11 @@ class PromoCodeServiceTest {
     @BeforeEach
     void setUp() {
         promoCode = new PromoCode();
-        promoCode.setPromoCodeId(1L);
+        promoCode.setPromoId(1L);
         promoCode.setCode("SAVE20");
         promoCode.setDiscountPercentage(20.0);
-        promoCode.setMaxUsageLimit(100);
-        promoCode.setUsageCount(0);
+        promoCode.setMaxUses(100);
+        promoCode.setCurrentUses(0);
     }
 
     @Test
@@ -88,17 +89,18 @@ class PromoCodeServiceTest {
 
         // Assert
         assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getPromoCodeId());
+        assertEquals(1L, result.get().getPromoId());
     }
 
     @Test
     void testUpdatePromoCode() {
         // Arrange
         promoCode.setDiscountPercentage(30.0);
+        when(promoCodeRepository.findById(promoCode.getPromoId())).thenReturn(Optional.of(promoCode));
         when(promoCodeRepository.save(promoCode)).thenReturn(promoCode);
 
         // Act
-        PromoCode result = promoCodeService.updatePromoCode(promoCode);
+        PromoCode result = promoCodeService.updatePromoCode(promoCode.getPromoId(), promoCode);
 
         // Assert
         assertEquals(30.0, result.getDiscountPercentage());
@@ -132,8 +134,8 @@ class PromoCodeServiceTest {
     @Test
     void testIsPromoCodeValid_ExceededLimit() {
         // Arrange
-        promoCode.setUsageCount(100);
-        promoCode.setMaxUsageLimit(100);
+        promoCode.setCurrentUses(100);
+        promoCode.setMaxUses(100);
         when(promoCodeRepository.findByCode("SAVE20")).thenReturn(Optional.of(promoCode));
 
         // Act
@@ -147,7 +149,7 @@ class PromoCodeServiceTest {
     void testGetAllPromoCodes() {
         // Arrange
         PromoCode promoCode2 = new PromoCode();
-        promoCode2.setPromoCodeId(2L);
+        promoCode2.setPromoId(2L);
         promoCode2.setCode("SAVE50");
         promoCode2.setDiscountPercentage(50.0);
         List<PromoCode> promoCodes = Arrays.asList(promoCode, promoCode2);
@@ -171,7 +173,7 @@ class PromoCodeServiceTest {
         promoCodeService.incrementUsageCount("SAVE20");
 
         // Assert
-        assertEquals(1, promoCode.getUsageCount());
+        assertEquals(1, promoCode.getCurrentUses());
         verify(promoCodeRepository, times(1)).save(promoCode);
     }
 

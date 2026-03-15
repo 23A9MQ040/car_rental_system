@@ -60,6 +60,11 @@ public class CarService {
         return carRepository.save(car);
     }
 
+    // Overload for testing
+    public Car updateCar(Car car) {
+        return updateCar(car.getCarId(), car);
+    }
+
     public void markCarAvailable(Long carId, boolean available) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new IllegalArgumentException("Car not found"));

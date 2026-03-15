@@ -61,6 +61,15 @@ This starts both the MySQL database and the Application, fully configured.
 ```bash
 mvn spring-boot:run
 ```
+> [!NOTE]
+> The application is configured to run on **Port 8081** to ensure maximum compatibility and avoid common port conflicts. 
+> Access the UI at: `http://localhost:8000/index.html` (Frontend) and the API at `http://localhost:8081/api` (Backend).
+
+### 3. Optimized Build
+The `pom.xml` has been optimized for Spring Boot 3.x and JDK 17+. Run a full clean build with:
+```bash
+mvn clean install
+```
 
 ---
 

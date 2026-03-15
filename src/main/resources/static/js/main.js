@@ -589,7 +589,7 @@ function goToBooking(carId) {
         return;
     }
     localStorage.setItem('selectedCarId', carId);
-    window.location.href = 'booking.html';
+    smartRedirect('booking.html');
 }
 
 // ===== BOOKING FUNCTIONS =====
@@ -725,7 +725,7 @@ async function handleBooking(event) {
         if (response.ok) {
             const data = await response.json();
             alert('Booking successful! Booking ID: ' + data.booking.bookingId);
-            window.location.href = 'user-dashboard.html';
+            smartRedirect('user-dashboard.html');
         } else {
             throw new Error('Booking failed');
         }
@@ -754,7 +754,7 @@ async function handleBooking(event) {
         }
 
         alert('Booking successful! Booking ID: ' + bookingId);
-        window.location.href = 'user-dashboard.html';
+        smartRedirect('user-dashboard.html');
     }
 }
 
